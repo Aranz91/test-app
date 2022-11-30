@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
@@ -10,18 +11,35 @@ use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
+    public const DRIVER = 'google';
+    public const LAT = 'lat';
+    public const LON = 'lon';
+    public const TOKEN_NAME = 'Laravel Password Grant Client';
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function redirectToProvider(Request $request)
     {
-        return Socialite::driver('google')->redirect()->withCookies([cookie('lat', $request->get('lat'), 60), cookie('lon', $request->get('lon'), 60)]);
+        return Socialite::driver(self::DRIVER)
+            ->redirect()
+            ->withCookies([
+                cookie(self::LAT, $request->get(self::LAT), 60),
+                cookie(self::LON, $request->get(self::LON), 60)
+            ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function handleProviderCallback(Request $request)
     {
-        Auth::logout();
-        $lat = $request->cookie('lat');
-        $lon = $request->cookie('lon');
+        $lat = $request->cookie(self::LAT);
+        $lon = $request->cookie(self::LON);
         
-        $googleUser = Socialite::driver('google')->stateless()->user();
+        $googleUser = Socialite::driver(self::DRIVER)->stateless()->user();
 
         $user = User::updateOrCreate([
             'google_id' => $googleUser->id
@@ -34,14 +52,13 @@ class LoginController extends Controller
             'lon' => $lon
         ]);
 
-        Auth::login($user);
-
-        $token = $user->createToken('Laravel Password Grant Client')->accessToken;
-//        return view('afterAuth');
-        $response = ['token' => $token];
-        return response($response, 200);
+        $token = $user->createToken(self::TOKEN_NAME)->accessToken;
+        return response(['token' => $token], 200);
     }
 
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function logout()
     {
         Auth::logout();
