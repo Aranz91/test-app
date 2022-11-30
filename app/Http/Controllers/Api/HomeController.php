@@ -10,16 +10,28 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     /**
+     * @var OpenWeatherService
+     */
+    protected $openWeatherService;
+    
+    /**
+     * HomeController constructor.
+     *
+     * @param OpenWeatherService $openWeatherService
+     */
+    public function __construct(OpenWeatherService $openWeatherService)
+    {
+        $this->openWeatherService = $openWeatherService;
+    }
+    /**
      * @param Request $request
      * @return array
      */
-    public function getHome(Request $request)
+    public function home(Request $request)
     {
-        $weatherService = new OpenWeatherService();
-
         return [
             $request->user(),
-            $weatherService->getWeather($request->user()->lat, $request->user()->lon)
+            $this->openWeatherService->getWeather($request->user()->lat, $request->user()->lon)
         ];
     }
 }
