@@ -21,11 +21,11 @@ class OpenWeatherService
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      * @return array
      */
-    public function getWeather($lat, $lon)
+    public function getWeather(float $lat, float $lon)
     {
         if (!$this->hasCache($lat, $lon)) {
             $this->requestToApi($lat, $lon);
@@ -34,10 +34,10 @@ class OpenWeatherService
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      */
-    private function requestToApi($lat, $lon)
+    private function requestToApi(float $lat, float $lon)
     {
         $apiURL = $this->buildUrl($lat, $lon);
         $response = Http::get($apiURL);
@@ -46,11 +46,11 @@ class OpenWeatherService
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      * @return bool
      */
-    private function hasCache($lat, $lon)
+    private function hasCache(float $lat, float $lon)
     {
         $hashKay = $this->hashKay($lat, $lon);
         if (Redis::get($hashKay . '.temp')) {
@@ -60,22 +60,22 @@ class OpenWeatherService
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      * @return string
      */
-    private function hashKay($lat, $lon)
+    private function hashKay(float $lat, float $lon)
     {
         $hash = hash('md5', date('d-m-Y') . '*' . $lat . '*' . $lon);
         return $hash;
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      * @return array
      */
-    private function getFromCache($lat, $lon)
+    private function getFromCache(float $lat, float $lon)
     {
         $return = [];
         $hashKay = $this->hashKay($lat, $lon);
@@ -87,11 +87,11 @@ class OpenWeatherService
     }
 
     /**
-     * @param $lat
-     * @param $lon
+     * @param float $lat
+     * @param float $lon
      * @param $value
      */
-    private function setToCache($lat, $lon, $value)
+    private function setToCache(float $lat, float $lon, $value)
     {
         $hashKay = $this->hashKay($lat, $lon);
         foreach (self::WEATHER_PARAMS as $param) {

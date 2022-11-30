@@ -55,7 +55,7 @@ class LoginController extends Controller
 
         $googleUser = Socialite::driver(self::DRIVER)->stateless()->user();
 
-        $user = $this->userRepository->getByGoogleId($googleUser->id);
+        $user = $this->userRepository->getByGoogleId($googleUser->getId());
 
         $userData = [
             'google_id' => $googleUser->id,
