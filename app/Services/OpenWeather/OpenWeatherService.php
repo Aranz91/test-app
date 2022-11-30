@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Redis;
 
 class OpenWeatherService
 {
-    public const APP_ID = '98e0cb11d771cb765fc1c8f032bb699f';
     public const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather?';
     public const WEATHER_PARAMS = ['temp', 'pressure', 'humidity', 'temp_min', 'temp_max'];
 
@@ -18,7 +17,7 @@ class OpenWeatherService
      */
     private function buildUrl($lat, $lon)
     {
-        return self::BASE_URL . 'lat=' . $lat . '&lon=' . $lon . '&units=metric&appid=' . self::APP_ID;
+        return self::BASE_URL . 'lat=' . $lat . '&lon=' . $lon . '&units=metric&appid=' . env('APP_ID');
     }
 
     /**
